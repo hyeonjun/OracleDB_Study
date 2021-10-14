@@ -1,0 +1,84 @@
+* 데이터베이스엣 원하는 데이터 검색, 추출
+- Syntax ( [] 안에 있는 것은 생략가능)
+select [ALL | DISTINCT] 열_리스트
+from 테이블_리스트
+[where 조건]
+[group by 열_리스트 [having 조건]]
+[order by 열_리스트 [asc | desc]];
+
+실행 순서 : 1. FROM -> 2. SELECT
+
+* Column Alias
+select name as 이름 from 테이블 : name 컬럼을 이름으로 별칭을 만들어서 출력함
+ => as 예약어는 생략가능하다, select name 이름 from 테이블
+
+ex)
+select ename name from emp; => ename -> name
+select ename as name from emp; => ename -> name
+select ename "as" from emp;  => ename -> as
+select (sal + comm) "Annual Salary" from emp; => (SAL+COMM) -> Annual Salary
+
+
+* 기본적인 산술연산 사용가능
+select ename, (sal+200) * 12 from emp;
+select ename, -sal * 10 from emp;
+
+* NULL
+- 아무런 값도 정해지지 않았음을 의미
+- 어떠한 데이터타입에도 사용가능
+- NOT NULL이나 Primary Key 속성에는 사용할 수 없음
+- NULL을 포함한 산술식은 NULL
+
+ex) select sal, comm, (sal+comm)*12 from emp;
+	SAL	COMM	     (SAL+COMM)*12
+1	800	(null)		(null)
+2	1600	300		22800
+...
+
+- NVL(expr1, expr2)
+ expr1이 NULL이면 expr2를 출력한다
+ 데이터타입이 호환 가능 하여야 함
+
+ex) select sal, comm, (sal+NVL(comm,0))*12 FROM emp;
+	SAL	COMM	     (SAL+COMM)*12
+1	800	(null)		9600
+2	1600	300		22800
+
+* Literal
+- select 절에 사용되는 문자, 숫자, Date 타입 등의 상수
+- Date 타입이나 문자열은 작은 따옴표('')로 둘러싸야 함
+- 문자열 결합(Concatunation) 연산자 : ||
+
+ex)
+select ename, 1000, SYSDATE from emp;
+	ENAME	   1000        SYSDATE
+1	SMITH       1000	     21/10/14
+2	ALLEN	   1000	     21/10/14
+....
+
+select 'Name is ' || ename || ' and no is ' || empno from emp;
+	'NAMEIS'||ENAME||'ANDNOIS'||EMPNO
+1	Name is SMITH and no is 7369
+2	Name is ALLEN and no is 7499
+....
+
+* WHERE
+- 조건을 부여하여 만족하는 ROW Selection
+- 연산자
+ =, !=, >, <, <=, >=
+ IN : 집합에 포함?
+ BETWEEN a AND B : a와 b 사이?
+ LIKE : 문자열 부분 검색
+ IS NULL, IS NOT NULL : NULL인지 검색
+ AND, OR : 둘 다 만족? / 둘 중 하나만 만족?
+ NOT : 만족하지 않음?
+ ANY, ALL : 집합 중 어느 한 열, 집합 중 모든 열 (다른 비교연산자와 함께 사용)
+ EXIST : 결과 Row가 하나라도 있는지
+
+실행 순서 : FROM -> WHERE -> SELECT
+
+
+
+
+
+
