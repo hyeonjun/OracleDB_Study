@@ -1,0 +1,62 @@
+*  JOIN
+- 둘 이상의 테이블을 합쳐서 하나의 큰 테이블로 만드는 방법
+- 필요성
+ 1. 관계형 모델에서는 데이터의 일관성이나 효율을 위하여 데이터 중복을 최소화(정규화)
+ 2. Foreign Key를 이용하여 참조
+ 3. 정규화된 테이블로부터 결합된 형태의 정보를 추출할 필요가 있음
+
+* 카티젼 프로덕트(Cartesian Product)
+  select ename, dname from emp, dept;
+- 결과 : 두 테이블의 행들의 가능한 모든 쌍이 추출.
+ => 원하는 결과를 위해(카티젼 프로덕트를 막기 위해) 올바른 Join 조건을 WHERE절에 부여해야함
+
+ex) Equi Join : 조건 -> Equal(=)
+select A.empno, A.ename, A.deptno, B.dname, B.loc
+from emp A, dept B
+where A.deptno = B.deptno;
+
+- 둘 이상의 Join
+select e.employee_id, e.first_name, d.department_name, l.location_id
+from employees e, departments d, locations l
+where e.department_id = d.department_id
+and d.location_id = l.location_id;
+
+ex) Theta Join(Non-Equi Join) : 임의의 조건
+select e.ename, e.sal, s.grade
+from emp e, salgrade s
+where e.sal between s.losal and s.hisal;
+
+ex) Outer Join
+1. Join 조건을 만족하지 않는 (짝이 없는) 튜플의 경우 Null을 포함하여 결과 생성
+2. 모든 행이 결과 테이블에 나옴
+
+- 종류
+1. Left Outer Join : 왼쪽의 모든 튜플 출력
+2. Right Outer Join : 오른쪽의 모든 튜플 출력
+3. Full Outer Join : 양쪽 모든 튜플 출력
+
+- 표현 방법
+: Null이 올 수 있는 쪽 조건에 (+)를 붙인다
+
+select e.ename, e.deptno e_deptno, d.deptno d_deptno, d.dname
+from emp e, dept d
+where e.deptno (+)= d.deptno;
+     ENAME       E_DEPTNO          D_DEPTNO        DNAME
+...
+15     (null)              (null)                    40         OPERATIONS
+
+ex) Self Join
+1. 자기 자신과 join
+2. Alias를 사용해야 함
+
+select e1.ename, e1.empno empno_1, e2.mgr, e2.empno empno_2, e2.ename
+from emp e1, emp e2
+where e1.empno = e2.mgr;
+      ENAME      EMPNO_1       MGR         EMPNO_2        ENAME_1
+1       FORD            7902       7902               7369            SMITH
+....
+
+
+
+
+

@@ -1,0 +1,84 @@
+* Aggregation Function (집계함수)
+- 여러 행으로부터 하나의 결과값을 반환
+- 종류
+ AVG
+ COUNT
+    - COUNT(*) : number of rows in table (NULL도 count된다)
+    - COUNT(expr) : non-null value (NULL은 빠진다
+    - COUNT(DISTINCT expr) : distinct non-null
+ MAX
+ MIN
+ SUM
+ STDDEV
+ VARIANCE
+
+ex) 
+select avg(sal) from emp;
+     AVG(SAL)
+1   2073.1242..
+
+select max(sal) from emp;
+     MAX(SAL)
+1         5000
+
+select min(sal) from emp;
+     MIN(SAL)
+1          800
+
+select sum(sal) from emp;
+     SUM(SAL)
+1        29025
+
+select count(sal 컬럼) from emp;
+     COUNT(SAL)
+1                14
+
+select count(comm) from emp;
+     COUNT(COMM)
+1                      4
+
+select count(*) from emp;
+     COUNT(*)
+1             14
+
+- 주의
+select deptno, avg(sal) from emp; => 오류
+1. 집계함수의 결과는 한 row만 남게된다
+2. deptno는 하나의 row에 표현될 수 없다
+3. 부서별과 같은 내용이 필요할 때는 Group by절 사용
+
+ex) GROUP BY
+select deptno, avg(sal)
+from emp
+group by deptno; => 부서별 평균 연봉
+      DEPTNO    AVG(SAL)
+1	 30      1566.66..
+2	 20	 2715
+3	 10      2916.66..
+
+GROUP BY했을 때 SELECT에 넣을 수 있는 컬럼
+1. 집계함수
+2. GROUP BY 참여 컬럼
+
+ex)
+select e.deptno, avg(sal) //d.dname 불가능
+from emp e, dept d
+where e.deptno = d.deptno
+group by e.deptno;
+
+select e.deptno, avg(sal), d.dname
+from emp e, dept d
+where e.deptno = d.deptno
+group by e.deptno, d.dname;
+
+ex) GROUP BY HAVING [조건]
+select e.deptno, avg(sal), d.dname
+from emp e, dept d
+where e.deptno = d.deptno
+group by e.deptno, d.dname
+having avg(sal) > 2000; // 집계함수로 조건절을 사용할 때는 where에 넣지않고 having에 해야한다.
+
+
+
+
+

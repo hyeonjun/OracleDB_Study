@@ -1,0 +1,62 @@
+* Single-Row Function : 하나의 Row를 입력으로 받는 함수
+- 숫자함수
+- 문자함수
+- 날짜함수
+- 변환함수
+- 기타함수
+- 집합함수(Aggregation Function)
+- 분석함수(Analytic Function)
+- 정규표현식(Regular Expression)
+
+* 문자열 함수
+ex) 대소문자 변환
+select lower('Database system') from dual;
+: database system
+select upper('Datebase system') from dual;
+: DATEBASE SYSTEM
+select initcap('Database system') from dual;
+: Database system
+// dual : 테스트할 때 쓸 용도로 만들어진 가상 테이블
+
+ex) 문자열 조작
+select concat('Data', 'Base') from dual;
+: DataBase
+select substr('Database', 2,4) from dual;
+: atab
+select instr('Database', 'b') from dual; // 위치 반환
+: 5
+select lpad(sal, 10, '*') from emp; // 총 10자만들고 부족한 곳은 *로 왼쪽에 채움
+: *****24000
+select rpad(sal, 10, '*') from emp; // 총 10자만들고 부족한 곳은 *로 오른쪽에 채움
+: 24000*****
+select trim(' database ') from dual; // 앞뒤 공백 제거
+: database
+
+ex) 숫자 함수
+ABS(n) : 절대값
+CEIL(n) : 실수 내림
+FLOOR(n) : 실수 올림
+MOD(m,n) : 나머지
+POWER(m,n) : m의 n승
+ROUND(m,n) : 소수점 아래 n자리까지 반올림 => ROUND(4.567, 2) : 4.57
+TRUNC(m,n) : 소수점 아래 n자리미만 버림
+SIGN(n) : 부호(1, 0, -1) => SIGN(-10) : -1
+
+ex) Date 함수
+select sysdate from dual; // 현재 날짜 시간 반환
+
+ex) 변환 함수
+- 묵시적 변환: 변환 없이도 어느정도는 자동으로 변환됨
+- 자동으로 변환되지 않을 때는 명시적인 변환 함수 사용
+숫자 --- TO_CHAR(n, fmt) ---> 문자열 --- TO_DATE(s, fmt) ---> Date
+Date --- TO_CHAR(d, fmt) ---> 문자열 --- TO_NUMBER(s fmt) ---> 숫자
+
+select *
+from emp
+where hiredate between '1981/01/01' and '1981/12/31';
+
+select *
+from emp
+where hiredate > '1981/12/31';
+
+
