@@ -1,0 +1,140 @@
+* DDL
+- CREATE TABLE : 테이블 생성
+- ALTER TABLE : 테이블 관련 변경
+- DROP TABLE : 테이블 삭제
+- RENAME : 이름 변경
+- TRUNCATE : 테이블의 모든 데이터 삭제
+- COMMENT : 테이블에 설명 추가
+
+* 테이블 생성 - CREATE
+- 테이블 이름, 컬럼 이름, 데이터 타입 등 정의
+ex)
+create table book (
+    bookno number(5),
+    title varchar2(50),
+    author varchar2(10),
+    pubdate date
+);
+
+ex) Subquery를 이용한 테이블 생성
+- Subquery의 결과와 동일한 테이블 생성됨
+- 질의 결과 레코드들이 포함됨
+- NOT NULL 제약 조건만 상속됨
+create table empSALES
+as select * from emp
+    where deptno=30;
+
+* Naming Rules - 테이블, 컬럼, ... 등의 이름 명명 규칙
+- 문자로 시작
+- 30자 이내
+- A-Z, a-z, 0-9, _, $, #
+- 같은 유저가 소유한 다른 Object의 이름과 겹치지 않아야함
+- 오라클 예약서는 사용 X
+
+* 테이블 수정 - ALTER
+- 컬럼 추가 : ALTER TABLE 테이블명 ADD (컬럼명 타입);
+   alter table book add (pubs varchar2(50));
+
+- 컬럼 수정 : ALTER TABLE 테이블명 MODIFY (컬럼명 타입);
+   alter table book modify (title varchar2(100));
+- 컬럼 삭제 : ALTER TABLE 테이블명 DROP COLUMN 컬럼명
+   alter table book drop column author;
+
+- UNUSED 컬럼 
+  1. ALTER TABLE 테이블명 SET UNUSED (컬럼명);
+  2. ALTER TABLE 테이블명 DROP UNDUSED COLUMNS;
+
+* 기타 테이블 관련 명령 - 주의 : ROLLBACK의 대상이 아님!
+- 테이블 삭제 : DROP TABLE 테이블명;
+
+- 데이터 삭제 : TRUNCATE TABLE 테이블명;
+	        DELETE FROM 테이블명 [WHERE 조건문]
+- Comment : comment on table 테이블명 is 'comment'
+
+- RENAME : rename 테이블명1 to 테이블명2
+                raname 컬럼명1 to 컬럼명2
+
+* 제약조건
+- Constraint
+ 1. Database 테이블 레벨에서 특정한 규칙을 설정해둠
+ 2. 예상치 못한 데이터의 손실이나 일관성을 어기는 데이터의 추가, 변경 등을 예방
+
+- 종류
+ 1. NOT NULL
+ 2. UNIQUE
+ 3. PRIMARY KEY
+ 4. FOREIGN KEY
+ 5. CHECK
+
+- 문법
+CRATE TABLE 테이블명 (
+      컬럼명 데이터타입 제약조건,
+      .....
+      [테이블 제약조건]
+);
+
+- NOT NULL
+1. NULL값이 들어올 수 없음
+2. 컬럼형태로만 제약조건 정의할 수 이음 (테이블 제약조건 불가)
+
+- UNIQUE
+1. 중복된 값을 허용하지 않음(NULL 가능)
+2. 복합 컬럼에 대해서도 정의 가능
+3. 자동적으로 인덱스 생성
+create table book (
+   bookno number(5) constraint c_emp_u unique);
+
+- PRIMARY KEY
+1. NOT NULL + UNIQE(인덱스 자동 생성)
+2. 테이블 당 하나만 가능
+3. 복합 컬럼에 대해서 정의 가능 (순서 중요)
+
+- CHECK
+1. 임의의 조건 검사. 조건이 참이어야 변경 가능
+2. 동일 테이블의 컬럼만 이용 가능
+create table bok (
+    rate number check (rate in (1,2,3,4,5)));
+
+- FOREIGN KEY
+1. 참조 무결성 제약
+2. 일반적으로 REFERENCE 테이블의 PK를 참조
+3. REFERENCE 테이블에 없는 값은 삽입 불가
+4. REFERENCE 테이블의 레코드 삭제 시 동작
+  - on delete cascade : 해당하는 FK를 가진 참조행도 같이 삭제
+  - on delete selt null : 해당 FK를 NULL로 바꿈
+create table book (
+    author_id number(10),
+    constrainte c_book_fk FOREIGN KEY (author id)
+    reference author(id)
+    on delete set null);
+
+- 제약조건 추가 : ALTER TABLE 테이블명 ADD CONSTRAINT ... (NOT NULL은 추가 못함)
+alter table emp add constraint emp_mgr_fk
+   foreign key (mgr) references emp (empno);
+
+- 제약조건 삭제 : ALTER TABLE 테이블명 DROP CONSTRAINT 제약조건이름
+  PRIMARY KEY의 경우 FK 조건이 걸린 경우에는 CASCADE로 삭제해야함
+alter table book drop constraint c_emp_u;
+alter table dept drop primary key cascade;
+
+- 제약조건 비활성화
+1. 제약조건 검사 중지
+2. CASCADE를 사용하여서 의존되어 있는 다른 조건을 함께 중지시킬 수 있음
+3. 대규모 데이터 변경 등의 속도를 빠르게 함
+4. UNIQUE, PRIMARY KEY의 경우 인덱스 제거함
+alter table emp disable constraint c_emp_pk cascade;
+
+- 제약조건 활성화
+1. 중지되어 있는 제약조건 활성화
+2. UNIQUE, PK 인덱스 자동 생성
+alter table emp enable constraint c_emp_pk cascade;
+
+* CASCADE CONSTRAINT
+- 제약조건이 걸려있는 테이블이나 컬럼은 삭제 시 에러 발생
+- 컬럼이나 테이블 DROP할 때 관련 제약조건도 함께 삭제
+1. alter table emp drop (deptno) cascade contraint;
+2. drop table emp cascade constraint;
+
+
+
+

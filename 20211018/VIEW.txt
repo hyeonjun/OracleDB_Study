@@ -1,0 +1,37 @@
+* VIEW(가상 테이블) : a logical table based on one or more tables or views
+- 용도
+1. 보안강화
+2. 데이터 복잡성을 단순화
+3. 실제 테이블으 정의와 응용 프로그램 분리
+4. 복잡한 질의 숨김
+
+* VIEW 생성
+create [or replace] [force | no force] view 뷰_명 [(alias[, alias]...)]
+as Subquery
+     [with read only]
+     [with check option [constraint 제약조건]];
+- or replace : 없으면 만들고, 이미 만든 뷰를 삭제하지 않고 새로운 구조의 뷰로 변경 가능
+- force : base 테이블이 없어도 무조건 생성
+- with check option : view에 나타날 수 있는 행만 삽입/변경 가능
+
+* 기타
+- VIEW 삭제 : DROP VIEW 뷰_명
+
+* VIEW에 대한 변경
+- 제약적으로 가능
+1. simple view는 DML(DELETE, INSERT, UPDATE) 가능
+2. 제약조건을 만족시킬 수 없거나 원본 row를 유추할 수 없는 경우 등에는 변경 불가
+3. View를 변경했을 때 원본 테이블에 반영이 가능한지 판단
+ex)
+create or replace view v1 as
+  select distinct empno from emp;
+
+create or replace view v1 as
+  select count(empno from emp;
+
+create or replace view v3 as
+  select * from emp, dept where emp.deptno = dept.deptno;
+
+create or replace view v4 as
+  select empno, sal * 2 as dual from emp;
+

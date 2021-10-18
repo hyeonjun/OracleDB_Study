@@ -1,0 +1,27 @@
+* Sequence
+- 자동 번호 생성기
+- 용도
+ 1. Unique한 번호 생성
+ 2. 별도의 Concurrency나 Performance 고려 X
+
+* Sequence 생성
+create sequence seq_name
+ [INCREMENT BY n]		번호 간격
+ [START WITH n]			시작번호
+ [{MAXVALUE n | NOMAXVALUE}]       최대값
+ [{MINVALUE n | NOMINVALUE}]	최소값
+ [{CYCLE | NOCYCLE}]		
+ [{CACHE n | NOCACHE}]		오라클이 미리 생성해놓을 개수
+
+* Sequence 사용하기
+- Pseude Columns
+ 1. CURRVAL : Sequence의 현재 값을돌려준다
+  select seq_empno.CURRVAL from dual;
+ 2. NEXTVAL  : Sequence 다음 값을 돌려주며, 현재값을 다음값으로 바꿈(increment)
+  insert into emp (empno, ename)
+  values (seq_empno.NEXTVAL, 'KIM');
+
+* 기타
+alter sequence seq_name
+drop sequence seq_name
+

@@ -1,0 +1,56 @@
+* DML
+- ADD NEW ROW(S) : INSERT INTO 테이블명 [(컬럼리스트)] VALUES (값리스트);
+- MODIFY EXISTING ROWS : UPDATE 테이블명 SET 변경내용 [WHERE 조건];
+- REMOVE EXISTING ROWS : DELETE FROM 테이블명 [WHERE 조건];
+- 트랜잭션은 DML의 집합으로 이루어짐
+
+* INSERT
+- 묵시적 방법 : 컬럼이름. 순서 지정 X. 테이블 생성 시 정읳나 순서에 따라 값 지정
+insert into dept values (77, 'marketing', null);
+
+- 명시적 방법 : 컬럼명 명시적 사용. 지정되지 않은 컬럼 NULL 자동 입력
+insert into dept(dname, deptno)
+values ('marketing', 77);
+
+- Subquery 이용 : 타 테이블로부터 데이터 복사 (테이블은 이미 존재해야함)
+insert into deptusa
+       select deptno, dname
+       from dept
+       where country = 'USA';
+
+* UPDATE
+- 조건을 만족하는 레코드 변경
+ex) 10번 부서원의 월급 100 인상 and 수수료 0 변경
+update emp
+set sal = sal + 100, comm = 0
+where deptno = 10;
+
+- WHERE절이 생략되면 모든 레코드에 적용됨
+ex) 모든 직원의 월급 10% 인상
+update emp set sal = sal * 1.1;
+
+- Subquery 이용
+ex) 담당업무가 'scott'과 같은 사람들의 월급을 부서 최고액으로 변경
+update emp set sal = (select max(sal) from emp)
+where job = (select job from emp where ename='SCOTT');
+
+* DELETE
+- 조건을 만족하는 레코드 삭제
+ex) 이름이 'SCOTT'인 사원 삭제
+delete from emp where ename='SCOTT';
+
+- 조건이 없으면 모든 레코드 삭제됨(주의)
+ex) delete from emp;
+
+- Subquery
+ex) 'sales'부서의 직원 모두 삭제
+delete from emp
+where deptno = (select deptno from dept where dname='SALES');
+
+* 기타
+- DEFAULT : defualt값이 정의된 컬럼에 기본값을 입력할 경우 사용 가능
+insert into book values (200, 'Gems', DEFAULT);
+
+- DELETE vs TRUNCATE
+ : Delete는 Rollback 가능, but 대량의 log 유발하여 Truncate보다 느림
+

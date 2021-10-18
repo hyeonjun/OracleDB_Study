@@ -1,0 +1,99 @@
+* SUBQUERT
+- 하나의 SQL 질의문 속에 다른 SQL 질의문이  포함되어 있는 상ㅌ
+
+ex) 'SCOTT'보다 월급이 많은 사람의 이름은?
+1. 'SCOTT'의 월급?
+select sal
+from emp
+where ename = 'SCOTT';
+     SAL
+1  3000
+
+2. SCOTT보다 월급이 많은 사람의 이름
+select ename
+from emp
+where sal > (select sal
+                 from emp
+                 where ename = 'SCOTT');
+      ENAME
+1       KING
+
+ex) Single-Row Subquery
+- Subquery의 결과가 한 Row인 경우
+- Single-Row Operator 사용해야 함 : =, >, >=, <, <=, <>
+select ename, sal, deptno
+from emp
+where sal = (select MIN(sal) from emp);
+
+select ename, sal
+from emp
+where sal < (select AVG(sal) from emp);
+
+select ename, deptno
+from emp
+where deptno = (select deptno from dept where dname = 'SALES');
+
+ex) Multi-Row Subquery
+- Subquery으 결과가 둘 이상의 Row
+- Multi-Row에 대한 연산을 사용해야 함 : ANY, ALL, IN, EXIST..
+select ename, sal, deptno
+from emp
+where ename IN (select min(ename) from emp group by deptno);
+
+select ename, sal, deptno
+from emp
+where ename = ANY (select MIN(ename) from emp group by deptno);
+
+ex) Correlated Query
+- Outer query의 한 ROW를 얻는다.
+- 해당 Row를 가지고 Inner Query를 계산
+- 계산 결과를 이용 Outer query의 where절을 evaluate
+- 결과가 참이면 해당 Row를 결과에 포함
+select ename, sal, deptno
+from emp e
+where sal > (select avg(sal)
+             from emp
+             where deptno = e.deptno);
+
+- 각 부서별로 최고 급여를 받는 사원
+1.
+select deptno, empno, ename, sal
+from emp
+where (deptno, sal) IN (select deptno, max(sal)
+                        from emp group by deptno);
+
+2.
+select e.deptno, e.empno, e.ename, e.sal
+from emp e, (select s.deptno, max(s.sal) msal
+            from emp s group by deptno) m
+where e.deptno = m.deptno and e.sal = m.msal;
+
+3.
+select deptno, empno, ename, sal
+from emp e
+where e.sal = (select max(sal) from emp where deptno = e.deptno);'
+
+* Top-K Query
+- ROWNUM : 질의의 결과에 가사응로 부여되는 Oracle의 Pseudo Column
+- Top-K Query : 조건을 만족하는 상위 K개의 결과를 빨리 얻기
+- 81년도에 입사한 사람 중 월급이 가상 많은 3명은 누구인가?
+ex)
+select rownum, ename, sal
+from (select * from emp where hiredate like '81%' order by sal desc)
+where rownum < 4;
+
+* SET Operator
+- 두 질의의 결과로 집합 연산
+- UNION, UNION ALL, INTERSECT, MINUS
+A = {a, b}, B = {b, c}
+1. A UNION B = {a, b, c}
+2. A UNION ALL B = {a, b, b, c}
+3. A INTERSECT B = {b}
+4. A MINUS B = {a}
+ex)
+select ename from emp
+union
+select dname from dept;
+
+
+
